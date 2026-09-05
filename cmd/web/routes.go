@@ -16,3 +16,11 @@ func (app *application) routes() http.Handler {
 
 	return app.logRequest(app.recoverPanic(app.securityHeaders(mux)))
 }
+
+func (app *application) internalRoutes() http.Handler {
+	mux := http.NewServeMux()
+
+	mux.HandleFunc("GET /ping", app.ping)
+
+	return app.logRequest(app.recoverPanic(mux))
+}

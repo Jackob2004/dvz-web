@@ -29,6 +29,15 @@ func (app *application) serveHTTP() error {
 		WriteTimeout: defaultWriteTimeout,
 	}
 
+	internalSrv := &http.Server{
+		Addr:         fmt.Sprintf("127.0.0.1:%d", app.config.internalHttpPort),
+		Handler:      app.internalRoutes(),
+		ErrorLog:     slog.NewLogLogger(app.logger.Handler(), slog.LevelWarn),
+		IdleTimeout:  defaultIdleTimeout,
+		ReadTimeout:  defaultReadTimeout,
+		WriteTimeout: defaultWriteTimeout,
+	}
+
 	shutdownErrorChan := make(chan error)
 
 	go func() {
@@ -37,24 +46,45 @@ func (app *application) serveHTTP() error {
 		<-quitChan
 
 		ctx, cancel := context.WithTimeout(context.Background(), defaultShutdownPeriod)
+		srvErr := srv.Shutdown(ctx)
 		defer cancel()
 
-		shutdownErrorChan <- srv.Shutdown(ctx)
+		ctx2, cancel2 := context.WithTimeout(context.Background(), defaultShutdownPeriod)
+		internalSrvErr := internalSrv.Shutdown(ctx2)
+		defer cancel2()
+
+		shutdownErrorChan <- errors.Join(srvErr, internalSrvErr)
 	}()
 
 	app.logger.Info("starting server", slog.Group("server", "addr", srv.Addr))
+	app.logger.Info("starting internal server", slog.Group("internal-server", "addr", internalSrv.Addr))
+
+	internalErrChan := make(chan error, 1)
+	go func() {
+		err := internalSrv.ListenAndServe()
+
+		if !errors.Is(err, http.ErrServerClosed) {
+			internalErrChan <- err
+			return
+		}
+		internalErrChan <- nil
+	}()
 
 	err := srv.ListenAndServe()
 	if !errors.Is(err, http.ErrServerClosed) {
 		return err
 	}
 
-	err = <-shutdownErrorChan
-	if err != nil {
+	if err := <-shutdownErrorChan; err != nil {
+		return err
+	}
+
+	if err := <-internalErrChan; err != nil {
 		return err
 	}
 
 	app.logger.Info("stopped server", slog.Group("server", "addr", srv.Addr))
+	app.logger.Info("stopped internal server", slog.Group("internal-server", "addr", internalSrv.Addr))
 
 	app.wg.Wait()
 	return nil

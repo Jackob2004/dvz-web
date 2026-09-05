@@ -26,9 +26,10 @@ func main() {
 }
 
 type config struct {
-	baseURL  string
-	httpPort int
-	db       struct {
+	baseURL          string
+	httpPort         int
+	internalHttpPort int
+	db               struct {
 		dsn         string
 		automigrate bool
 	}
@@ -46,6 +47,7 @@ func run(logger *slog.Logger) error {
 
 	flag.StringVar(&cfg.baseURL, "base-url", "http://localhost:9697", "base URL for the application")
 	flag.IntVar(&cfg.httpPort, "http-port", 9697, "port to listen on for HTTP requests")
+	flag.IntVar(&cfg.internalHttpPort, "internal-http-port", 9698, "port to listen on for internal API HTTP requests")
 	flag.StringVar(&cfg.db.dsn, "db-dsn", "db.sqlite?_journal_mode=WAL&_busy_timeout=5000&_foreign_keys=on&_synchronous=NORMAL&_txlock_immediate", "sqlite3 DSN")
 	flag.BoolVar(&cfg.db.automigrate, "db-automigrate", true, "run migrations on startup")
 
