@@ -31,10 +31,10 @@ func New(dsn string) (*DB, error) {
 		return nil, err
 	}
 
-	db.SetMaxOpenConns(25)
-	db.SetMaxIdleConns(25)
+	db.SetMaxOpenConns(8)
+	db.SetMaxIdleConns(8)
 	db.SetConnMaxIdleTime(5 * time.Minute)
-	db.SetConnMaxLifetime(2 * time.Hour)
+	db.SetConnMaxLifetime(0)
 
 	return &DB{dsn: dsn, DB: db}, nil
 }
