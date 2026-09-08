@@ -22,6 +22,10 @@ type DB struct {
 	*sqlx.DB
 }
 
+var (
+	ErrNoRecord = errors.New("no record found")
+)
+
 func New(dsn string) (*DB, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), defaultTimeout)
 	defer cancel()

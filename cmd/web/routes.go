@@ -20,7 +20,9 @@ func (app *application) routes() http.Handler {
 func (app *application) internalRoutes() http.Handler {
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("GET /ping", app.ping)
+	mux.HandleFunc("GET /api/ping", app.ping)
+	mux.HandleFunc("GET /api/player/{id}", app.player)
+	mux.HandleFunc("PUT /api/players/update", app.playersUpdate)
 
 	return app.logRequest(app.recoverPanic(mux))
 }
