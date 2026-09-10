@@ -48,3 +48,19 @@ func (app *application) playersUpdate(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusNoContent)
 }
+
+func (app *application) playersLeaderboard(w http.ResponseWriter, r *http.Request) {
+	leaderboard, err := app.db.Leaderboard()
+	if err != nil {
+		if errors.Is(err, database.ErrNoRecord) {
+			app.notFound(w, r)
+		} else {
+			app.serverError(w, r, err)
+		}
+		return
+	}
+
+	if err := response.JSON(w, http.StatusOK, leaderboard); err != nil {
+		app.serverError(w, r, err)
+	}
+}

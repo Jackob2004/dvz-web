@@ -23,6 +23,11 @@ type PlayerStatistics struct {
 	BowHits             int    `db:"bow_hits" json:"bow_hits"`
 }
 
+type LeaderboardRow struct {
+	Name  string `db:"username" json:"username"`
+	Level int    `db:"level" json:"level"`
+}
+
 func (db *DB) GetPlayerStatistics(playerUUID string) (PlayerStatistics, error) {
 	var stats PlayerStatistics
 
@@ -76,4 +81,20 @@ func (db *DB) UpdatePlayersStatistics(stats []PlayerStatistics) error {
 
 	err = tx.Commit()
 	return err
+}
+
+func (db *DB) Leaderboard() ([]LeaderboardRow, error) {
+	var leaderboardRows []LeaderboardRow
+	stmt := "SELECT username, level FROM players ORDER BY level DESC LIMIT 10"
+
+	err := db.Select(&leaderboardRows, stmt)
+	if err != nil {
+		return nil, err
+	}
+	
+	if len(leaderboardRows) == 0 {
+		return nil, ErrNoRecord
+	}
+
+	return leaderboardRows, nil
 }
