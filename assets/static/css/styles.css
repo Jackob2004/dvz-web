@@ -1,0 +1,145 @@
+:root {
+    --pallete-navy: #1C2C40;
+    --pallete-dark-green: #305925;
+    --pallete-light-green: #3F7330;
+    --pallete-brown: #73532D;
+    --pallete-red: #59070E;
+    --pallete-text-white: #F2EFE9;
+
+    --shadow-color: 220deg 45% 12%;
+    --shadow-elevation-low:
+            0.3px 0.5px 0.7px hsl(var(--shadow-color) / 0.34),
+            0.4px 0.8px 1px -1.2px hsl(var(--shadow-color) / 0.34),
+            1px 2px 2.5px -2.5px hsl(var(--shadow-color) / 0.34);
+    --shadow-elevation-medium:
+            0.3px 0.5px 0.7px hsl(var(--shadow-color) / 0.36),
+            0.8px 1.6px 2px -0.8px hsl(var(--shadow-color) / 0.36),
+            2.1px 4.1px 5.2px -1.7px hsl(var(--shadow-color) / 0.36),
+            5px 10px 12.6px -2.5px hsl(var(--shadow-color) / 0.36);
+    --shadow-elevation-high:
+            0.3px 0.5px 0.7px hsl(var(--shadow-color) / 0.34),
+            1.5px 2.9px 3.7px -0.4px hsl(var(--shadow-color) / 0.34),
+            2.7px 5.4px 6.8px -0.7px hsl(var(--shadow-color) / 0.34),
+            4.5px 8.9px 11.2px -1.1px hsl(var(--shadow-color) / 0.34),
+            7.1px 14.3px 18px -1.4px hsl(var(--shadow-color) / 0.34),
+            11.2px 22.3px 28.1px -1.8px hsl(var(--shadow-color) / 0.34),
+            17px 33.9px 42.7px -2.1px hsl(var(--shadow-color) / 0.34),
+            25px 50px 62.9px -2.5px hsl(var(--shadow-color) / 0.34);
+}
+
+html {
+    font-size: clamp(1rem, 0.75rem + 1.5vw, 2rem);
+}
+
+body {
+    height: 100vh;
+    background-image: image-set("/static/img/background_small.webp" 1x, "/static/img/background_medium.webp" 2x);
+    background-position: center;
+    background-size: cover;
+    background-attachment: fixed;
+    display: flex;
+    flex-direction: column;
+    font-family: "Roboto Light", serif;
+}
+
+@media (min-width: 768px) {
+    body {
+        background-image: image-set("/static/img/background_medium.webp" 1x, "/static/img/background.webp" 2x);
+    }
+}
+
+@media (min-width: 1440px) {
+    body {
+        background-image: image-set("/static/img/background.webp" 1x, "/static/img/background_2x.webp" 2x);
+    }
+}
+
+main {
+    flex-grow: 1;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 0.85rem;
+}
+
+header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 32px;
+    padding: 16px;
+
+    background-image: url("/static/img/cracks.svg");
+    background-size: cover;
+    background-position: center;
+    box-shadow: var(--shadow-elevation-medium);
+    border-color: var(--pallete-brown);
+    border-bottom: 3px solid var(--pallete-brown);
+}
+
+header a {
+    margin-bottom: 8px;
+    color: var(--pallete-text-white);
+}
+
+header h1 {
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+
+.metamorphous-regular {
+    font-family: "Metamorphous", serif;
+    font-weight: 500;
+    font-style: normal;
+}
+
+.inter-regular {
+    font-family: "Inter", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+}
+
+
+nav ul {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    list-style-type: none;
+}
+
+nav li {
+    padding: 8px 16px;
+    background-color: var(--pallete-red);
+    color: var(--pallete-text-white);
+    font-weight: bold;
+    font-size: 0.6rem;
+}
+
+nav li:hover {
+    background-color: #770c17;
+}
+
+a {
+    text-decoration: none;
+}
+
+p {
+    max-inline-size: 66ch;
+}
+
+.card h2 {
+    background: url("/static/img/cracks.svg") center;
+    background-size: cover;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+.card {
+    border-top: 5px ridge var(--pallete-brown);
+    background-color: var(--pallete-navy);
+    color: var(--pallete-text-white);
+    padding: 16px;
+    box-shadow: var(--shadow-elevation-high);
+    border-bottom-radius: 10%;
+}
