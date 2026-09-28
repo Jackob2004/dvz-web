@@ -42,6 +42,24 @@ var TemplateFuncs = template.FuncMap{
 
 	"urlSetParam": urlSetParam,
 	"urlDelParam": urlDelParam,
+
+	"leaderboardPos": leaderboardPosition,
+}
+
+func leaderboardPosition(idx, currPage, pageLen int) string {
+	pos := idx + 1 + (currPage-1)*pageLen
+	posStr := "#" + strconv.Itoa(pos)
+
+	switch pos {
+	case 1:
+		return "<span style='font-weight:bold;color:gold'>" + posStr + "</span>"
+	case 2:
+		return "<span style='font-weight:bold;color:#D1D1D1'>" + posStr + "</span>"
+	case 3:
+		return "<span style='font-weight:bold;color:#E8D5C0'>" + posStr + "</span>"
+	default:
+		return posStr
+	}
 }
 
 func formatTime(format string, t time.Time) string {

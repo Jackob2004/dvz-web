@@ -39,6 +39,7 @@ body {
     background-attachment: fixed;
     display: flex;
     flex-direction: column;
+    gap: 48px;
     font-family: "Roboto Light", serif;
 }
 
@@ -60,7 +61,9 @@ main {
     display: flex;
     justify-content: center;
     align-items: center;
+
     font-size: 0.85rem;
+    color: var(--pallete-text-white);
 }
 
 header {
@@ -142,4 +145,147 @@ p {
     padding: 16px;
     box-shadow: var(--shadow-elevation-high);
     border-bottom-radius: 10%;
+}
+
+#leaderboard {
+    background: url("/static/img/cracks.svg") center;
+    background-size: cover;
+    width: 60vw;
+    height: 100%;
+    padding: 16px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+#sorter {
+    justify-content: space-around;
+    align-items: center;
+
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 0.5rem;
+}
+
+.sorter-btn img {
+    width: 1.6rem;
+}
+
+.sorter-btn {
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 4px;
+    border: none;
+    border-top: 3px ridge;
+
+    background-color: var(--pallete-dark-green);
+    color: var(--pallete-text-white);
+}
+
+
+#leaderboard button:hover {
+    background-color: #3e7431;
+    cursor: pointer;
+}
+
+.sorter-btn p {
+    font-weight: 450;
+}
+
+.btn-disabled {
+    opacity: 0.4;
+}
+
+#players {
+    flex-grow: 1;
+
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+
+    border-top: 3px solid;
+}
+
+.player-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 4fr repeat(4, 3fr);
+    align-items: center;
+    gap: 1rem;
+
+    background-color: #263d57;
+    font-size: 0.7rem;
+}
+
+#row-description {
+    font-weight: bold;
+}
+
+.row-name {
+    font-weight: 500;
+}
+
+.row-name a {
+    color: var(--pallete-text-white);
+}
+
+.row-name a:hover {
+    color: var(--pallete-light-green);
+}
+
+.player-row div:not(.row-name) {
+    justify-self: start;
+}
+
+.player-row div:nth-child(1) {
+    justify-self: center;
+}
+
+
+.player-row:not(:nth-child(1)) {
+    border-radius: 25px;
+}
+
+.placeholder-row {
+    visibility: hidden;
+}
+
+.gold {
+    color: gold;
+}
+
+#pager {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#page-display {
+    background-color: var(--pallete-dark-green);
+    padding: 8px;
+}
+
+#navigation {
+    display: flex;
+    gap: 1rem;
+}
+
+.pager-btn {
+    width: 2rem;
+    border-radius: 50px;
+    border: 3px ridge var(--pallete-text-white);
+    background-color: var(--pallete-dark-green);
+}
+
+footer {
+    display: flex;
+    justify-content: space-between;
+}
+
+button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    pointer-events: none;
 }

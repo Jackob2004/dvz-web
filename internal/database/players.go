@@ -28,6 +28,34 @@ type LeaderboardRow struct {
 	Level int    `db:"level" json:"level"`
 }
 
+type WebLeaderboardRow struct {
+	Name         string `db:"username"`
+	Level        int    `db:"level"`
+	XP           int    `db:"experience_points"`
+	Deaths       int    `db:"deaths"`
+	Playtime     int    `db:"total_play_time"`
+	NumberOfRows int    `db:"total_rows"`
+}
+
+func (db *DB) WebLeaderboard(rowsPerPage, offset int) (rows []WebLeaderboardRow, totalRecords int, err error) {
+	stmt := `SELECT username, level, experience_points, deaths, total_play_time, COUNT(*) OVER() AS total_rows
+	FROM players ORDER BY experience_points DESC, username LIMIT ? OFFSET ?`
+	err = db.Select(&rows, stmt, rowsPerPage, offset)
+
+	if err != nil {
+		return
+	}
+
+	if len(rows) == 0 {
+		err = ErrNoRecord
+		return
+	}
+
+	totalRecords = rows[0].NumberOfRows
+
+	return
+}
+
 func (db *DB) GetPlayerStatistics(playerUUID string) (PlayerStatistics, error) {
 	var stats PlayerStatistics
 
@@ -91,7 +119,7 @@ func (db *DB) Leaderboard() ([]LeaderboardRow, error) {
 	if err != nil {
 		return nil, err
 	}
-	
+
 	if len(leaderboardRows) == 0 {
 		return nil, ErrNoRecord
 	}

@@ -1,3 +1,4 @@
+{{- /*gotype: github.com/Jackob2004/dvz-web/cmd/web.leaderboardData*/ -}}
 {{define "page:title"}}DvZ Leaderboard{{end}}
 
 {{define "page:meta"}}
@@ -5,11 +6,94 @@
 {{end}}
 
 {{define "page:main"}}
-    <div class="card">
-        <h2 class="metamorphous-regular">Some title</h2>
-        <hr>
-        <p class="inter-regular">
-            Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since 1966, when designers at Letraset and James Mosley, the librarian at St Bride Printing Library in London, took a 1914 Cicero translation and scrambled it to make dummy text for Letraset's Body Type sheets. It has survived not only many decades, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised thanks to these sheets and more recently with desktop publishing software like Aldus PageMaker and Microsoft Word including versions of Lorem Ipsum.
-        </p>
+    <div class="inter-regular" id="leaderboard">
+        {{template "sorter" .}}
+
+        <div hx-get="/leaderboard-component/0" hx-trigger="load" hx-swap="outerHTML">
+            Loading...
+        </div>
+
+        {{template "pager" .}}
+    </div>
+
+{{end}}
+
+{{define "sorter"}}
+    <div id="sorter">
+        <button class="sorter-btn" disabled>
+            <img src="static/img/book_icon.svg" alt="Experience book icon">
+            <span>Level</span>
+        </button>
+        <button class="sorter-btn">
+            <img src="static/img/grave_icon.svg" alt="Grave icon">
+            <span>Deaths</span>
+        </button>
+        <button class="sorter-btn">
+            <img src="static/img/clock_icon.svg" alt="Clock icon">
+            <span>Play time</span>
+        </button>
+        <button class="sorter-btn">
+            <img src="static/img/crown_icon.svg" alt="Crown icon">
+            <span>Effectiveness</span>
+        </button>
     </div>
 {{end}}
+
+{{define "players"}}
+    <div id="players">
+        <div id="row-description" class="player-row">
+            <div></div>
+            <div></div>
+            <div>NAME</div>
+            <div>LEVEL</div>
+            <div>XP</div>
+            <div>DEATHS</div>
+            <div>PLAYTIME</div>
+        </div>
+
+        {{range $index, $player:= .PlayerRows}}
+            <div class="player-row">
+                <div>{{safeHTML (leaderboardPos $index $.CurrPage 10)}}</div>
+                <img width="64" height="64" src="https://api.mcheads.org/head/{{ $player.Name }}/64" alt="Notch" />
+                <div class="row-name"><a href="http://localhost:9697">{{ $player.Name }}</a></div>
+                <div>{{ $player.Level }}</div>
+                <div>{{ $player.XP }}</div>
+                <div>{{ $player.Deaths }}</div>
+                <div>{{ $player.Playtime }}</div>
+            </div>
+        {{end}}
+
+        {{range .PlaceholderRows}}
+            <div class="player-row placeholder-row" aria-hidden="true">
+                <div>#0</div>
+                <img width="64" height="64" src="static/img/skin_head_placeholder.png" alt="Notch" />
+                <div class="row-name">Placeholder</div>
+                <div>0</div>
+                <div>0</div>
+                <div>0</div>
+                <div>0h</div>
+            </div>
+        {{end}}
+    </div>
+{{end}}
+
+{{define "pager"}}
+        <div id="pager" hx-swap-oob="true">
+            <div id="page-display">Page <i>{{ .CurrPage }}</i> of <i>{{ .TotalPages }}</i></div>
+            <div id="navigation">
+                <button hx-target="#players" hx-swap="outerHTML" hx-get="leaderboard-component/{{ .PrevOffset }}" class="pager-btn" {{ if not .HasPrev }}disabled{{ end }}>
+                    <img src="static/img/arrow_left_icon.svg" alt="Previous page">
+                </button>
+
+                <button hx-target="#players" hx-swap="outerHTML" hx-get="leaderboard-component/{{ .NextOffset }}" class="pager-btn" {{ if not .HasNext }}disabled{{ end }}>
+                    <img src="static/img/arrow_right_icon.svg" alt="Next page">
+                </button>
+            </div>
+        </div>
+{{end}}
+
+{{define "leaderboard"}}
+    {{template "players" .}}
+    {{template "pager" .}}
+{{end}}
+
