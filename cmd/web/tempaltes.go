@@ -20,6 +20,7 @@ type leaderboardData struct {
 	TotalPages      int
 	NextOffset      int
 	PrevOffset      int
+	SortingOption   database.SortOption
 }
 
 func (app *application) newTemplateData(r *http.Request) templateData {

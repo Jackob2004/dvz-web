@@ -2,14 +2,14 @@
 {{define "page:title"}}DvZ Leaderboard{{end}}
 
 {{define "page:meta"}}
-<meta name="page" content="home">
+    <meta name="page" content="home">
 {{end}}
 
 {{define "page:main"}}
     <div class="inter-regular" id="leaderboard">
         {{template "sorter" .}}
 
-        <div hx-get="/leaderboard-component/0" hx-trigger="load" hx-swap="outerHTML">
+        <div hx-get="/leaderboard-component/level/0" hx-trigger="load" hx-swap="outerHTML">
             Loading...
         </div>
 
@@ -19,20 +19,24 @@
 {{end}}
 
 {{define "sorter"}}
-    <div id="sorter">
-        <button class="sorter-btn" disabled>
+    <div id="sorter" hx-swap-oob="true">
+        <button class="sorter-btn" hx-target="#players" hx-get="/leaderboard-component/level/0" hx-swap="outerHTML"
+                {{ if eq .SortingOption "level" }}disabled{{end}}>
             <img src="static/img/book_icon.svg" alt="Experience book icon">
             <span>Level</span>
         </button>
-        <button class="sorter-btn">
+        <button class="sorter-btn" hx-target="#players" hx-get="/leaderboard-component/deaths/0" hx-swap="outerHTML"
+                {{ if eq .SortingOption "deaths" }}disabled{{end}}>
             <img src="static/img/grave_icon.svg" alt="Grave icon">
             <span>Deaths</span>
         </button>
-        <button class="sorter-btn">
+        <button class="sorter-btn" hx-target="#players" hx-get="/leaderboard-component/playtime/0" hx-swap="outerHTML"
+                {{ if eq .SortingOption "playtime" }}disabled{{end}}>
             <img src="static/img/clock_icon.svg" alt="Clock icon">
             <span>Play time</span>
         </button>
-        <button class="sorter-btn">
+        <button class="sorter-btn" hx-target="#players" hx-get="/leaderboard-component/effectiveness/0"
+                hx-swap="outerHTML" {{ if eq .SortingOption "effectiveness" }}disabled{{end}}>
             <img src="static/img/crown_icon.svg" alt="Crown icon">
             <span>Effectiveness</span>
         </button>
@@ -54,7 +58,7 @@
         {{range $index, $player:= .PlayerRows}}
             <div class="player-row">
                 <div>{{safeHTML (leaderboardPos $index $.CurrPage 10)}}</div>
-                <img width="64" height="64" src="https://api.mcheads.org/head/{{ $player.Name }}/64" alt="Notch" />
+                <img width="64" height="64" src="https://api.mcheads.org/head/{{ $player.Name }}/64" alt="Notch"/>
                 <div class="row-name"><a href="http://localhost:9697">{{ $player.Name }}</a></div>
                 <div>{{ $player.Level }}</div>
                 <div>{{ $player.XP }}</div>
@@ -66,7 +70,7 @@
         {{range .PlaceholderRows}}
             <div class="player-row placeholder-row" aria-hidden="true">
                 <div>#0</div>
-                <img width="64" height="64" src="static/img/skin_head_placeholder.png" alt="Notch" />
+                <img width="64" height="64" src="static/img/skin_head_placeholder.png" alt="Notch"/>
                 <div class="row-name">Placeholder</div>
                 <div>0</div>
                 <div>0</div>
@@ -78,21 +82,26 @@
 {{end}}
 
 {{define "pager"}}
-        <div id="pager" hx-swap-oob="true">
-            <div id="page-display">Page <i>{{ .CurrPage }}</i> of <i>{{ .TotalPages }}</i></div>
-            <div id="navigation">
-                <button hx-target="#players" hx-swap="outerHTML" hx-get="leaderboard-component/{{ .PrevOffset }}" class="pager-btn" {{ if not .HasPrev }}disabled{{ end }}>
-                    <img src="static/img/arrow_left_icon.svg" alt="Previous page">
-                </button>
+    <div id="pager" hx-swap-oob="true">
+        <div id="page-display">Page <i>{{ .CurrPage }}</i> of <i>{{ .TotalPages }}</i></div>
+        <div id="navigation">
+            <button hx-target="#players" hx-swap="outerHTML"
+                    hx-get="leaderboard-component/{{ .SortingOption }}/{{ .PrevOffset }}" class="pager-btn"
+                    {{ if not .HasPrev }}disabled{{ end }}>
+                <img src="static/img/arrow_left_icon.svg" alt="Previous page">
+            </button>
 
-                <button hx-target="#players" hx-swap="outerHTML" hx-get="leaderboard-component/{{ .NextOffset }}" class="pager-btn" {{ if not .HasNext }}disabled{{ end }}>
-                    <img src="static/img/arrow_right_icon.svg" alt="Next page">
-                </button>
-            </div>
+            <button hx-target="#players" hx-swap="outerHTML"
+                    hx-get="leaderboard-component/{{ .SortingOption }}/{{ .NextOffset }}" class="pager-btn"
+                    {{ if not .HasNext }}disabled{{ end }}>
+                <img src="static/img/arrow_right_icon.svg" alt="Next page">
+            </button>
         </div>
+    </div>
 {{end}}
 
 {{define "leaderboard"}}
+    {{template "sorter" .}}
     {{template "players" .}}
     {{template "pager" .}}
 {{end}}

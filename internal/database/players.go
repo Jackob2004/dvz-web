@@ -37,9 +37,46 @@ type WebLeaderboardRow struct {
 	NumberOfRows int    `db:"total_rows"`
 }
 
-func (db *DB) WebLeaderboard(rowsPerPage, offset int) (rows []WebLeaderboardRow, totalRecords int, err error) {
+type SortOption string
+
+const (
+	Level         = SortOption("level")
+	DEATHS        = SortOption("deaths")
+	PlayTime      = SortOption("playtime")
+	EFFECTIVENESS = SortOption("effectiveness")
+)
+
+func ParseSortOption(text string) (SortOption, error) {
+	option := SortOption(text)
+	switch option {
+	case Level, DEATHS, PlayTime, EFFECTIVENESS:
+		return option, nil
+	default:
+		return option, errors.New("invalid sort option")
+	}
+}
+
+func (s SortOption) generateOrdering() string {
+	ordering := ""
+	switch s {
+	case Level:
+		ordering = "experience_points DESC,"
+	case DEATHS:
+		ordering = "deaths DESC,"
+	case PlayTime:
+		ordering = "total_play_time DESC,"
+	case EFFECTIVENESS:
+		ordering = "(1.0 * total_play_time / NULLIF(experience_points, 0)) ASC NULLS LAST,"
+	default:
+		ordering = ""
+	}
+
+	return " ORDER BY " + ordering + " username "
+}
+
+func (db *DB) WebLeaderboard(rowsPerPage, offset int, sortOption SortOption) (rows []WebLeaderboardRow, totalRecords int, err error) {
 	stmt := `SELECT username, level, experience_points, deaths, total_play_time, COUNT(*) OVER() AS total_rows
-	FROM players ORDER BY experience_points DESC, username LIMIT ? OFFSET ?`
+	FROM players` + sortOption.generateOrdering() + `LIMIT ? OFFSET ?`
 	err = db.Select(&rows, stmt, rowsPerPage, offset)
 
 	if err != nil {
