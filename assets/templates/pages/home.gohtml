@@ -83,7 +83,11 @@
 
 {{define "pager"}}
     <div id="pager" hx-swap-oob="true">
-        <div id="page-display">Page <i>{{ .CurrPage }}</i> of <i>{{ .TotalPages }}</i></div>
+        <div id="page-display">
+            <div>
+                Page <i>{{ .CurrPage }}</i> of <i>{{ .TotalPages }}</i>
+            </div>
+        </div>
         <div id="navigation">
             <button hx-target="#players" hx-swap="outerHTML"
                     hx-get="leaderboard-component/{{ .SortingOption }}/{{ .PrevOffset }}" class="pager-btn"
