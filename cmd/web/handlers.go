@@ -110,8 +110,8 @@ func (app *application) playerHeadSkin(w http.ResponseWriter, r *http.Request) {
 	var etag string
 	var image []byte
 	if noRecord {
-		etag = defaultSkinETag
-		image = defaultSkin
+		etag = app.skinService.DefaultSkinEtag
+		image = app.skinService.DefaultSkin
 	} else {
 		etag = "\"" + skin.SkinHash + "\""
 		image = skin.SkinImage

@@ -6,6 +6,7 @@ import (
 	"errors"
 	"io"
 	"io/fs"
+	"log/slog"
 	"net/http"
 	"time"
 
@@ -13,28 +14,31 @@ import (
 	"github.com/Jackob2004/dvz-web/internal/database"
 )
 
-var defaultSkin []byte
-var defaultSkinETag string
-
-var customClient = &http.Client{Timeout: 5 * time.Second}
-
-func hashImage(data []byte) string {
-	hash := sha256.Sum256(data)
-	return hex.EncodeToString(hash[:])
+type SkinsService struct {
+	db              *database.DB
+	logger          *slog.Logger
+	customClient    *http.Client
+	DefaultSkin     []byte
+	DefaultSkinEtag string
 }
 
-func (app *application) initDefaultSkin() {
+func newSkinsService(db *database.DB, logger *slog.Logger) (*SkinsService, error) {
 	data, err := fs.ReadFile(assets.EmbeddedFiles, "static/img/skin_head_default.png")
 	if err != nil {
-		app.logger.Error("error reading embedded images: %v", err)
+		return nil, err
 	}
 
-	defaultSkin = data
-	defaultSkinETag = "\"" + hashImage(data) + "\""
+	return &SkinsService{
+		db:              db,
+		logger:          logger,
+		customClient:    &http.Client{Timeout: 5 * time.Second},
+		DefaultSkin:     data,
+		DefaultSkinEtag: "\"" + hashImage(data) + "\"",
+	}, nil
 }
 
-func fetchPlayerHeadSkin(playerName string) ([]byte, error) {
-	resp, err := customClient.Get("https://api.mcheads.org/head/" + playerName + "/64")
+func (s *SkinsService) fetchPlayerHeadSkin(playerName string) ([]byte, error) {
+	resp, err := s.customClient.Get("https://api.mcheads.org/head/" + playerName + "/64")
 	if err != nil {
 		return nil, err
 	}
@@ -52,22 +56,22 @@ func fetchPlayerHeadSkin(playerName string) ([]byte, error) {
 	return imageBytes, nil
 }
 
-func saveNewPlayerSkin(db *database.DB, skinData database.PlayerSkinData, playerName string) error {
-	headSkin, err := fetchPlayerHeadSkin(playerName)
+func (s *SkinsService) saveNewPlayerSkin(skinData database.PlayerSkinData, playerName string) error {
+	headSkin, err := s.fetchPlayerHeadSkin(playerName)
 	if err != nil {
 		return err
 	}
 
-	return db.UpdatePlayerSkin(skinData.PlayerID, hashImage(headSkin), headSkin, time.Now().Unix())
+	return s.db.UpdatePlayerSkin(skinData.PlayerID, hashImage(headSkin), headSkin, time.Now().Unix())
 }
 
-func updateExistingPlayerSkin(db *database.DB, skinData database.PlayerSkinData, playerName string) error {
+func (s *SkinsService) updateExistingPlayerSkin(skinData database.PlayerSkinData, playerName string) error {
 	oneWeek := time.Hour * 167
 	if time.Since(time.Unix(*skinData.FetchedAt, 0)) < oneWeek {
 		return nil
 	}
 
-	headSkin, err := fetchPlayerHeadSkin(playerName)
+	headSkin, err := s.fetchPlayerHeadSkin(playerName)
 	if err != nil {
 		return err
 	}
@@ -77,35 +81,38 @@ func updateExistingPlayerSkin(db *database.DB, skinData database.PlayerSkinData,
 		return nil
 	}
 
-	return db.UpdatePlayerSkin(skinData.PlayerID, newHash, headSkin, time.Now().Unix())
+	return s.db.UpdatePlayerSkin(skinData.PlayerID, newHash, headSkin, time.Now().Unix())
 }
 
-func savePlayerSkinsAsync(app *application, r *http.Request, stats []database.PlayerStatistics) {
-	app.backgroundTask(r, func() error {
-		ticker := time.NewTicker(150 * time.Millisecond)
-		defer ticker.Stop()
+func (s *SkinsService) savePlayerSkins(stats []database.PlayerStatistics) error {
+	ticker := time.NewTicker(150 * time.Millisecond)
+	defer ticker.Stop()
 
-		for _, player := range stats {
-			skinData, err := app.db.GetPlayerSkinData(player.UUID)
-			if err != nil {
-				app.logger.Error("Getting player skin data from DB failed", "player", player.Name, "err", err)
-				continue
-			}
-
-			<-ticker.C
-
-			if skinData.SkinHash == nil && skinData.FetchedAt == nil {
-				if err := saveNewPlayerSkin(app.db, skinData, player.Name); err != nil {
-					app.logger.Error("Saving new player skin data failed", "player", player.Name, "err", err)
-				}
-				continue
-			}
-
-			if err = updateExistingPlayerSkin(app.db, skinData, player.Name); err != nil {
-				app.logger.Error("Updating existing player skin data failed", "player", player.Name, "err", err)
-			}
-
+	for _, player := range stats {
+		skinData, err := s.db.GetPlayerSkinData(player.UUID)
+		if err != nil {
+			s.logger.Error("Getting player skin data from DB failed", "player", player.Name, "err", err)
+			continue
 		}
-		return nil
-	})
+
+		<-ticker.C
+
+		if skinData.SkinHash == nil && skinData.FetchedAt == nil {
+			if err := s.saveNewPlayerSkin(skinData, player.Name); err != nil {
+				s.logger.Error("Saving new player skin data failed", "player", player.Name, "err", err)
+			}
+			continue
+		}
+
+		if err = s.updateExistingPlayerSkin(skinData, player.Name); err != nil {
+			s.logger.Error("Updating existing player skin data failed", "player", player.Name, "err", err)
+		}
+
+	}
+	return nil
+}
+
+func hashImage(data []byte) string {
+	hash := sha256.Sum256(data)
+	return hex.EncodeToString(hash[:])
 }

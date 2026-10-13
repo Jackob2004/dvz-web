@@ -46,7 +46,9 @@ func (app *application) playersUpdate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	savePlayerSkinsAsync(app, r, stats)
+	app.backgroundTask(r, func() error {
+		return app.skinService.savePlayerSkins(stats)
+	})
 
 	w.WriteHeader(http.StatusNoContent)
 }

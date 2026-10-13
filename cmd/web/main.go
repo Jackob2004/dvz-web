@@ -36,10 +36,11 @@ type config struct {
 }
 
 type application struct {
-	config config
-	db     *database.DB
-	logger *slog.Logger
-	wg     sync.WaitGroup
+	config      config
+	db          *database.DB
+	logger      *slog.Logger
+	skinService *SkinsService
+	wg          sync.WaitGroup
 }
 
 func run(logger *slog.Logger) error {
@@ -73,12 +74,17 @@ func run(logger *slog.Logger) error {
 		}
 	}
 
-	app := &application{
-		config: cfg,
-		db:     db,
-		logger: logger,
+	skinsService, err := newSkinsService(db, logger)
+	if err != nil {
+		return err
 	}
-	app.initDefaultSkin()
+
+	app := &application{
+		config:      cfg,
+		db:          db,
+		logger:      logger,
+		skinService: skinsService,
+	}
 
 	return app.serveHTTP()
 }
