@@ -58,7 +58,8 @@
         {{range $index, $player:= .PlayerRows}}
             <div class="player-row">
                 <div>{{safeHTML (leaderboardPos $index $.CurrPage 10)}}</div>
-                <img width="64" height="64" src="https://api.mcheads.org/head/{{ $player.Name }}/64" alt="Notch"/>
+                <img width="64" height="64" src="/player/skin/head/{{ $player.UUID }}"
+                     alt="{{ $player.Name }}"/>
                 <div class="row-name"><a href="http://localhost:9697">{{ $player.Name }}</a></div>
                 <div>{{ $player.Level }}</div>
                 <div>{{ $player.XP }}</div>
@@ -70,7 +71,7 @@
         {{range .PlaceholderRows}}
             <div class="player-row placeholder-row" aria-hidden="true">
                 <div>#0</div>
-                <img width="64" height="64" src="static/img/skin_head_placeholder.png" alt="Notch"/>
+                <img width="64" height="64" src="static/img/skin_head_default.png" alt="Steve"/>
                 <div class="row-name">Placeholder</div>
                 <div>0</div>
                 <div>0</div>

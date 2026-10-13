@@ -46,6 +46,8 @@ func (app *application) playersUpdate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	savePlayerSkinsAsync(app, r, stats)
+
 	w.WriteHeader(http.StatusNoContent)
 }
 

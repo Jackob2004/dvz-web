@@ -30,6 +30,7 @@ type LeaderboardRow struct {
 
 type WebLeaderboardRow struct {
 	Name         string `db:"username"`
+	UUID         string `db:"uuid"`
 	Level        int    `db:"level"`
 	XP           int    `db:"experience_points"`
 	Deaths       int    `db:"deaths"`
@@ -75,7 +76,7 @@ func (s SortOption) generateOrdering() string {
 }
 
 func (db *DB) WebLeaderboard(rowsPerPage, offset int, sortOption SortOption) (rows []WebLeaderboardRow, totalRecords int, err error) {
-	stmt := `SELECT username, level, experience_points, deaths, total_play_time, COUNT(*) OVER() AS total_rows
+	stmt := `SELECT username, uuid, level, experience_points, deaths, total_play_time, COUNT(*) OVER() AS total_rows
 	FROM players` + sortOption.generateOrdering() + `LIMIT ? OFFSET ?`
 	err = db.Select(&rows, stmt, rowsPerPage, offset)
 

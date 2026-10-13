@@ -95,3 +95,37 @@ func (app *application) leaderboardComponent(w http.ResponseWriter, r *http.Requ
 		app.serverError(w, r, err)
 	}
 }
+
+func (app *application) playerHeadSkin(w http.ResponseWriter, r *http.Request) {
+	playerUUID := r.PathValue("id")
+
+	skin, err := app.db.GetPlayerSkin(playerUUID)
+	noRecord := err != nil && errors.Is(err, database.ErrNoRecord)
+
+	if err != nil && !noRecord {
+		app.serverError(w, r, err)
+		return
+	}
+
+	var etag string
+	var image []byte
+	if noRecord {
+		etag = defaultSkinETag
+		image = defaultSkin
+	} else {
+		etag = "\"" + skin.SkinHash + "\""
+		image = skin.SkinImage
+	}
+
+	w.Header().Set("ETag", etag)
+	w.Header().Set("Cache-Control", "public, max-age=28800, must-revalidate")
+
+	if checkETag(r, etag) {
+		w.WriteHeader(http.StatusNotModified)
+		return
+	}
+
+	w.Header().Set("Content-Type", "image/png")
+	w.Header().Set("Content-Length", strconv.Itoa(len(image)))
+	w.Write(image)
+}

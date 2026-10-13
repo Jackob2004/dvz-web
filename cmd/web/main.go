@@ -78,6 +78,7 @@ func run(logger *slog.Logger) error {
 		db:     db,
 		logger: logger,
 	}
+	app.initDefaultSkin()
 
 	return app.serveHTTP()
 }

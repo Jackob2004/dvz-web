@@ -14,6 +14,7 @@ func (app *application) routes() http.Handler {
 
 	mux.HandleFunc("GET /", app.home)
 	mux.HandleFunc("GET /leaderboard-component/{sort}/{offset}", app.leaderboardComponent)
+	mux.HandleFunc("GET /player/skin/head/{id}", app.playerHeadSkin)
 
 	return app.logRequest(app.recoverPanic(app.securityHeaders(mux)))
 }

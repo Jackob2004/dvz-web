@@ -20,3 +20,7 @@ func (app *application) backgroundTask(r *http.Request, fn func() error) {
 		}
 	})
 }
+
+func checkETag(r *http.Request, etag string) bool {
+	return r.Header.Get("If-None-Match") == etag
+}
