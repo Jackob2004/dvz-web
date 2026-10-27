@@ -362,3 +362,105 @@ button:disabled {
     cursor: not-allowed;
     pointer-events: none;
 }
+
+#player-profile-card {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+
+    padding: 1rem;
+    width: min(90vw, 1300px);
+    background: url("/static/img/cracks.svg") center;
+    background-size: cover;
+    border-radius: 32px;
+}
+
+#profile-main-info {
+    display: flex;
+    align-items: flex-end;
+    gap: 1rem;
+
+    background-color: var(--pallete-navy);
+    padding: 16px;
+    border: 10px solid var(--pallete-brown);
+    border-radius: 16px;
+}
+
+@media (max-width: 740px) {
+    #profile-main-info {
+        flex-direction: column;
+        align-items: center;
+    }
+}
+
+#player-name {
+    font-weight: bold;
+    font-size: larger;
+}
+
+#player-image-container img {
+    width: 150px;
+    height: auto;
+}
+
+#level-marker {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    color: gold;
+}
+
+#level-marker div {
+    text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.85);
+}
+
+#level-value {
+    font-style: italic;
+}
+
+progress {
+    width: 80%;
+}
+
+table {
+    width: 80%;
+    margin: 0 auto;
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+    table-layout: fixed;
+    border-collapse: collapse;
+    border: 8px ridge silver;
+}
+
+td, th {
+    padding: 10px 20px;
+    border: 2px solid rgb(190, 190, 190);
+}
+
+thead th {
+    background-color: #152b45;
+}
+
+td {
+    text-align: center;
+}
+
+tr:nth-child(even) td {
+    background-color: #263d57;
+}
+
+tr:nth-child(odd) td {
+    background-color: #385a82;
+}
+
+td:last-child {
+    font-style: italic;
+}
+
+tbody tr:hover {
+    font-weight: bold;
+    opacity: 0.7;
+    background-color: #6084af;
+    color: black;
+}

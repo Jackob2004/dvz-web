@@ -2,7 +2,7 @@
 {{define "page:title"}}DvZ Leaderboard{{end}}
 
 {{define "page:meta"}}
-    <meta name="page" content="home">
+    <meta id="page-meta" name="page" content="home">
 {{end}}
 
 {{define "page:main"}}
@@ -60,11 +60,12 @@
                 <div>{{safeHTML (leaderboardPos $index $.CurrPage 10)}}</div>
                 <img width="64" height="64" src="/player/skin/head/{{ $player.UUID }}"
                      alt="{{ $player.Name }}"/>
-                <div class="row-name"><a href="http://localhost:9697">{{ $player.Name }}</a></div>
+                <div class="row-name"><a hx-get="/player/profile/{{ $player.UUID }}" hx-target="#leaderboard"
+                                         hx-swap="outerHTML">{{ $player.Name }}</a></div>
                 <div>{{ $player.Level }}</div>
                 <div>{{ $player.XP }}</div>
                 <div>{{ $player.Deaths }}</div>
-                <div>{{ $player.Playtime }}</div>
+                <div>{{ formatSeconds $player.Playtime }}</div>
             </div>
         {{end}}
 

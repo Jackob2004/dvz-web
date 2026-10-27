@@ -1,0 +1,83 @@
+{{- /*gotype: github.com/Jackob2004/dvz-web/internal/database.WebPlayerProfile*/ -}}
+{{define "page:title"}}<title hx-swap-oob="true" id="page-title">Player profile</title>{{end}}
+
+{{define "page:meta"}}
+    <meta hx-swap-oob="true" id="page-meta" name="page" content="player profile">
+{{end}}
+
+{{define "page:main"}}
+    <div id="player-profile-card">
+        <div id="profile-main-info">
+            <div id="player-image-container">
+                <img width="150" height="150" id="player-photo" src="/player/skin/head/{{ .UUID }}"
+                     alt=" {{ .Name }} - head skin">
+            </div>
+            <div id="player-name" class="metamorphous-regular">
+                {{ .Name }}
+            </div>
+        </div>
+
+        <div id="level-marker">
+            <div class="inter-regular">Level: <span id="level-value">{{ .Level }}</span></div>
+            <progress max="100" value="{{ mod .XP 100}}"></progress>
+        </div>
+
+        <table id="stats-table">
+            <thead>
+            <tr>
+                <th scope="col">Statistic</th>
+                <th scope="col">All time</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr>
+                <td>Dwarf kills</td>
+                <td>{{ .DwarfKills }}</td>
+            </tr>
+            <tr>
+                <td>Zombie kills</td>
+                <td>{{ .ZombieKills }}</td>
+            </tr>
+            <tr>
+                <td>AI Zombie kills</td>
+                <td>{{ .AiZombieKills }}</td>
+            </tr>
+            <tr>
+                <td>Shrine kills</td>
+                <td>{{ .ShrineKills }}</td>
+            </tr>
+            <tr>
+                <td>Deaths</td>
+                <td>{{ .Deaths }}</td>
+            </tr>
+            <tr>
+                <td>Games played</td>
+                <td>{{ .GamesPlayed }}</td>
+            </tr>
+            <tr>
+                <td>Play time</td>
+                <td>{{ formatSeconds .PlayTime }}</td>
+            </tr>
+            <tr>
+                <td>Longest time survived</td>
+                <td>{{ formatSeconds .LongestTimeSurvived }}</td>
+            </tr>
+            <tr>
+                <td>Rampage kill streak</td>
+                <td>{{ .RampageKillStreak}}</td>
+            </tr>
+            <tr>
+                <td>Arrow accuracy</td>
+                <td>{{ formatFloat .BowAccuracy 1 }}%</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+{{end}}
+
+{{define "profile_page"}}
+    {{template "page:main" .}}
+    {{template "page:title" .}}
+    {{template "page:meta" .}}
+{{end}}

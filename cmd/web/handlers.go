@@ -89,6 +89,7 @@ func (app *application) leaderboardComponent(w http.ResponseWriter, r *http.Requ
 		offset - rowsPerPage,
 		sortOption,
 	}
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 
 	err = response.NamedTemplate(w, http.StatusOK, data, "leaderboard", "pages/home.gohtml")
 	if err != nil {
@@ -128,4 +129,23 @@ func (app *application) playerHeadSkin(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "image/png")
 	w.Header().Set("Content-Length", strconv.Itoa(len(image)))
 	w.Write(image)
+}
+
+func (app *application) playerProfile(w http.ResponseWriter, r *http.Request) {
+	playerUUID := r.PathValue("id")
+	playerProfile, err := app.db.GetWebPlayerProfile(playerUUID)
+
+	if err != nil {
+		if errors.Is(err, database.ErrNoRecord) {
+			app.notFound(w, r)
+		} else {
+			app.serverError(w, r, err)
+		}
+		return
+	}
+
+	err = response.NamedTemplate(w, http.StatusOK, playerProfile, "profile_page", "pages/player_profile.gohtml")
+	if err != nil {
+		app.serverError(w, r, err)
+	}
 }

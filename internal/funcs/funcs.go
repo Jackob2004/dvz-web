@@ -44,6 +44,25 @@ var TemplateFuncs = template.FuncMap{
 	"urlDelParam": urlDelParam,
 
 	"leaderboardPos": leaderboardPosition,
+	"mod":            mod,
+	"formatSeconds":  formatSeconds,
+}
+
+func mod(a, b int) int {
+	return a % b
+}
+
+func formatSeconds(s int64) string {
+	timeDuration := (time.Duration(s) * time.Second).String()
+	if strings.HasSuffix(timeDuration, "m0s") {
+		timeDuration = strings.TrimSuffix(timeDuration, "0s")
+	}
+
+	if strings.HasSuffix(timeDuration, "h0m") {
+		timeDuration = strings.TrimSuffix(timeDuration, "0m")
+	}
+
+	return timeDuration
 }
 
 func leaderboardPosition(idx, currPage, pageLen int) string {

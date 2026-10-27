@@ -34,8 +34,25 @@ type WebLeaderboardRow struct {
 	Level        int    `db:"level"`
 	XP           int    `db:"experience_points"`
 	Deaths       int    `db:"deaths"`
-	Playtime     int    `db:"total_play_time"`
+	Playtime     int64  `db:"total_play_time"`
 	NumberOfRows int    `db:"total_rows"`
+}
+
+type WebPlayerProfile struct {
+	UUID                string  `db:"uuid"`
+	Name                string  `db:"username"`
+	XP                  int     `db:"experience_points"`
+	DwarfKills          int     `db:"dwarf_kills"`
+	ZombieKills         int     `db:"zombie_kills"`
+	AiZombieKills       int     `db:"ai_zombie_kills"`
+	ShrineKills         int     `db:"shrine_kills"`
+	Deaths              int     `db:"deaths"`
+	LongestTimeSurvived int64   `db:"longest_time_survived"` // sec
+	PlayTime            int64   `db:"total_play_time"`       // sec
+	GamesPlayed         int     `db:"games_played"`
+	RampageKillStreak   int     `db:"rampage_kill_streak"`
+	BowAccuracy         float64 `db:"bow_accuracy"`
+	Level               int     `db:"level"`
 }
 
 type SortOption string
@@ -163,4 +180,23 @@ func (db *DB) Leaderboard() ([]LeaderboardRow, error) {
 	}
 
 	return leaderboardRows, nil
+}
+
+func (db *DB) GetWebPlayerProfile(uuid string) (WebPlayerProfile, error) {
+	var profile WebPlayerProfile
+
+	stmt := `SELECT uuid, username, experience_points, dwarf_kills, zombie_kills, ai_zombie_kills, shrine_kills, deaths,
+    longest_time_survived, total_play_time, games_played, rampage_kill_streak, bow_accuracy, level
+	FROM players WHERE uuid = ?`
+
+	err := db.Get(&profile, stmt, uuid)
+
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return WebPlayerProfile{}, ErrNoRecord
+		}
+		return WebPlayerProfile{}, err
+	}
+
+	return profile, nil
 }
