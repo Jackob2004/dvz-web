@@ -33,6 +33,25 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func (app *application) leaderboardFull(w http.ResponseWriter, r *http.Request) {
+	data := leaderboardData{
+		nil,
+		10,
+		false,
+		false,
+		0,
+		0,
+		0,
+		0,
+		database.Level,
+	}
+
+	err := response.NamedTemplate(w, http.StatusOK, data, "leaderboard:full", "pages/home.gohtml")
+	if err != nil {
+		app.serverError(w, r, err)
+	}
+}
+
 const rowsPerPage = 10
 
 func (app *application) leaderboardComponent(w http.ResponseWriter, r *http.Request) {
@@ -62,7 +81,7 @@ func (app *application) leaderboardComponent(w http.ResponseWriter, r *http.Requ
 				0,
 				database.Level,
 			}
-			err := response.NamedTemplate(w, http.StatusOK, data, "leaderboard", "pages/home.gohtml")
+			err := response.NamedTemplate(w, http.StatusOK, data, "leaderboard:update", "pages/home.gohtml")
 			if err != nil {
 				app.serverError(w, r, err)
 			}
@@ -91,7 +110,7 @@ func (app *application) leaderboardComponent(w http.ResponseWriter, r *http.Requ
 	}
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 
-	err = response.NamedTemplate(w, http.StatusOK, data, "leaderboard", "pages/home.gohtml")
+	err = response.NamedTemplate(w, http.StatusOK, data, "leaderboard:update", "pages/home.gohtml")
 	if err != nil {
 		app.serverError(w, r, err)
 	}

@@ -19,7 +19,7 @@
 {{end}}
 
 {{define "sorter"}}
-    <div id="sorter" hx-swap-oob="true">
+    <div id="sorter">
         <button class="sorter-btn" hx-target="#players" hx-get="/leaderboard-component/level/0" hx-swap="outerHTML"
                 {{ if eq .SortingOption "level" }}disabled{{end}}>
             <img src="static/img/book_icon.svg" alt="Experience book icon">
@@ -84,7 +84,7 @@
 {{end}}
 
 {{define "pager"}}
-    <div id="pager" hx-swap-oob="true">
+    <div id="pager">
         <div id="page-display">
             <div>
                 Page <i>{{ .CurrPage }}</i> of <i>{{ .TotalPages }}</i>
@@ -106,9 +106,24 @@
     </div>
 {{end}}
 
-{{define "leaderboard"}}
-    {{template "sorter" .}}
+<!--templates for HTMX swaps-->
+
+{{define "leaderboard:update"}}
     {{template "players" .}}
-    {{template "pager" .}}
+    <hx-partial hx-target="#sorter" hx-swap="outerHTML">
+        {{template "sorter" .}}
+    </hx-partial>
+    <hx-partial hx-target="#pager" hx-swap="outerHTML">
+        {{template "pager" .}}
+    </hx-partial>
 {{end}}
 
+{{define "leaderboard:full"}}
+    {{template "page:main" . }}
+    <hx-partial hx-target="#page-title" hx-swap="innerHTML">
+        {{template "page:title" .}}
+    </hx-partial>
+    <hx-partial hx-target="#page-meta" hx-swap="outerHTML">
+        {{template "page:meta" .}}
+    </hx-partial>
+{{end}}

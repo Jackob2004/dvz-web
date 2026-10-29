@@ -1,8 +1,8 @@
 {{define "partial:nav"}}
-<nav>
-    <ul class="inter-regular">
-        <li><a href="#">Stats</a></li>
-        <li><a href="#">Live game</a></li>
-    </ul>
-</nav>
+    <nav>
+        <ul class="inter-regular">
+            <li><a hx-get="/leaderboard" hx-target="main" hx-swap="innerHTML">Stats</a></li>
+            <li><a href="#">Live game</a></li>
+        </ul>
+    </nav>
 {{end}}

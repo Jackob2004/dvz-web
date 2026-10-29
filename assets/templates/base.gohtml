@@ -18,7 +18,8 @@
     </head>
     <body>
     <header>
-        <h1 class="metamorphous-regular"><a href="/">Dwarves vs Zombies</a></h1>
+        <h1 class="metamorphous-regular"><a hx-get="/leaderboard" hx-target="main" hx-swap="innerHTML">Dwarves
+                vs Zombies</a></h1>
         {{template "partial:nav" .}}
     </header>
     <main>
