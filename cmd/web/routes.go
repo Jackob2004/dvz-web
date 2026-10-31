@@ -15,8 +15,8 @@ func (app *application) routes() http.Handler {
 	mux.HandleFunc("GET /", app.home)
 	mux.HandleFunc("GET /leaderboard/{sort}/{offset}", app.leaderboardFull)
 	mux.HandleFunc("GET /leaderboard-component/{sort}/{offset}", app.leaderboardComponent)
-	mux.HandleFunc("GET /player/skin/head/{id}", app.playerHeadSkin)
-	mux.HandleFunc("GET /player/profile/{id}", app.playerProfile)
+	mux.HandleFunc("GET /player/skin/head/{uuid}", app.playerHeadSkin)
+	mux.HandleFunc("GET /player/profile/{uuid}", app.playerProfile)
 
 	return app.logRequest(app.recoverPanic(app.securityHeaders(mux)))
 }
@@ -25,7 +25,7 @@ func (app *application) internalRoutes() http.Handler {
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("GET /api/ping", app.ping)
-	mux.HandleFunc("GET /api/player/{id}", app.player)
+	mux.HandleFunc("GET /api/player/{uuid}", app.player)
 	mux.HandleFunc("GET /api/players/leaderboard", app.playersLeaderboard)
 	mux.HandleFunc("PUT /api/players/update", app.playersUpdate)
 

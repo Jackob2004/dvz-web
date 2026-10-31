@@ -58,7 +58,7 @@ func (app *application) leaderboardComponent(w http.ResponseWriter, r *http.Requ
 }
 
 func (app *application) playerHeadSkin(w http.ResponseWriter, r *http.Request) {
-	playerUUID := r.PathValue("id")
+	playerUUID := r.PathValue("uuid")
 
 	skin, err := app.db.GetPlayerSkin(playerUUID)
 	noRecord := err != nil && errors.Is(err, database.ErrNoRecord)
@@ -92,7 +92,7 @@ func (app *application) playerHeadSkin(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *application) playerProfile(w http.ResponseWriter, r *http.Request) {
-	playerUUID := r.PathValue("id")
+	playerUUID := r.PathValue("uuid")
 	playerProfile, err := app.db.GetWebPlayerProfile(playerUUID)
 
 	if err != nil {
