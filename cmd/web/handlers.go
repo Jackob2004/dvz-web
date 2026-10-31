@@ -15,105 +15,46 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data := leaderboardData{
-		nil,
-		10,
-		false,
-		false,
-		0,
-		0,
-		0,
-		0,
-		database.Level,
+	data, err := app.constructLeaderboard(0, "level")
+	if err != nil {
+		app.serverError(w, r, err)
 	}
 
-	err := response.Page(w, http.StatusOK, data, "pages/home.gohtml")
+	err = response.Page(w, http.StatusOK, data, "pages/home.gohtml")
 	if err != nil {
 		app.serverError(w, r, err)
 	}
 }
 
-func (app *application) leaderboardFull(w http.ResponseWriter, r *http.Request) {
-	data := leaderboardData{
-		nil,
-		10,
-		false,
-		false,
-		0,
-		0,
-		0,
-		0,
-		database.Level,
-	}
-
-	err := response.NamedTemplate(w, http.StatusOK, data, "leaderboard:full", "pages/home.gohtml")
-	if err != nil {
-		app.serverError(w, r, err)
-	}
-}
-
-const rowsPerPage = 10
-
-func (app *application) leaderboardComponent(w http.ResponseWriter, r *http.Request) {
-	sortOption, err := database.ParseSortOption(r.PathValue("sort"))
-	if err != nil {
-		app.badRequest(w, r, err)
-		return
-	}
-
+func leaderboardHelper(w http.ResponseWriter, r *http.Request, templateName string, app *application) {
 	offset, err := strconv.Atoi(r.PathValue("offset"))
-	if err != nil || offset < 0 || offset%rowsPerPage != 0 {
-		app.badRequest(w, r, errors.New("invalid offset"))
+	if err != nil {
+		app.badRequest(w, r, errors.New("offset should be an integer"))
 		return
 	}
 
-	rows, totalRows, err := app.db.WebLeaderboard(rowsPerPage, offset, sortOption)
+	data, err := app.constructLeaderboard(offset, r.PathValue("sort"))
 	if err != nil {
-		if errors.Is(err, database.ErrNoRecord) {
-			data := leaderboardData{
-				nil,
-				0,
-				false,
-				false,
-				0,
-				0,
-				0,
-				0,
-				database.Level,
-			}
-			err := response.NamedTemplate(w, http.StatusOK, data, "leaderboard:update", "pages/home.gohtml")
-			if err != nil {
-				app.serverError(w, r, err)
-			}
+		if errors.Is(err, ErrInvalidSortOption) || errors.Is(err, ErrInvalidOffset) {
+			app.badRequest(w, r, err)
 		} else {
 			app.serverError(w, r, err)
 		}
 		return
 	}
 
-	totalPages := totalRows / rowsPerPage
-	if totalRows%rowsPerPage != 0 {
-		totalPages++
-	}
-	currPage := offset/rowsPerPage + 1
-
-	data := leaderboardData{
-		rows,
-		rowsPerPage - len(rows),
-		currPage < totalPages,
-		currPage != 1,
-		currPage,
-		totalPages,
-		offset + rowsPerPage,
-		offset - rowsPerPage,
-		sortOption,
-	}
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-
-	err = response.NamedTemplate(w, http.StatusOK, data, "leaderboard:update", "pages/home.gohtml")
+	err = response.NamedTemplate(w, http.StatusOK, data, templateName, "pages/home.gohtml")
 	if err != nil {
 		app.serverError(w, r, err)
 	}
+}
+
+func (app *application) leaderboardFull(w http.ResponseWriter, r *http.Request) {
+	leaderboardHelper(w, r, "leaderboard:full", app)
+}
+
+func (app *application) leaderboardComponent(w http.ResponseWriter, r *http.Request) {
+	leaderboardHelper(w, r, "leaderboard:update", app)
 }
 
 func (app *application) playerHeadSkin(w http.ResponseWriter, r *http.Request) {
@@ -163,7 +104,22 @@ func (app *application) playerProfile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = response.NamedTemplate(w, http.StatusOK, playerProfile, "profile_page", "pages/player_profile.gohtml")
+	sort := r.URL.Query().Get("sort")
+	nextOffset, err := strconv.Atoi(r.URL.Query().Get("next_offset"))
+	prevPageUrl := "/leaderboard/level/0"
+	if sort != "" && err == nil {
+		prevPageUrl = "/leaderboard/" + sort + "/" + strconv.Itoa(nextOffset-rowsPerPage)
+	}
+
+	data := struct {
+		database.WebPlayerProfile
+		PrevPageUrl string
+	}{
+		playerProfile,
+		prevPageUrl,
+	}
+
+	err = response.NamedTemplate(w, http.StatusOK, data, "profile_page", "pages/player_profile.gohtml")
 	if err != nil {
 		app.serverError(w, r, err)
 	}

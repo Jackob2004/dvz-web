@@ -9,9 +9,7 @@
     <div class="inter-regular" id="leaderboard">
         {{template "sorter" .}}
 
-        <div hx-get="/leaderboard-component/level/0" hx-trigger="load" hx-swap="outerHTML">
-            Loading...
-        </div>
+        {{ template "players" .}}
 
         {{template "pager" .}}
     </div>
@@ -60,8 +58,13 @@
                 <div>{{safeHTML (leaderboardPos $index $.CurrPage 10)}}</div>
                 <img width="64" height="64" src="/player/skin/head/{{ $player.UUID }}"
                      alt="{{ $player.Name }}"/>
-                <div class="row-name"><a hx-get="/player/profile/{{ $player.UUID }}" hx-target="#leaderboard"
-                                         hx-swap="outerHTML">{{ $player.Name }}</a></div>
+                <div class="row-name">
+                    <a hx-get="/player/profile/{{ $player.UUID }}?sort={{ $.SortingOption}}&next_offset={{ $.NextOffset }}"
+                       hx-target="#leaderboard"
+                       hx-swap="outerHTML show:top showTarget:main">
+                        {{ $player.Name }}
+                    </a>
+                </div>
                 <div>{{ $player.Level }}</div>
                 <div>{{ $player.XP }}</div>
                 <div>{{ $player.Deaths }}</div>
@@ -70,7 +73,7 @@
         {{end}}
 
         {{range .PlaceholderRows}}
-            <div class="player-row placeholder-row" aria-hidden="true">
+            <div class=" player-row placeholder-row" aria-hidden="true">
                 <div>#0</div>
                 <img width="64" height="64" src="static/img/skin_head_default.png" alt="Steve"/>
                 <div class="row-name">Placeholder</div>

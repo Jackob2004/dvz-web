@@ -13,7 +13,7 @@ func (app *application) routes() http.Handler {
 	mux.Handle("GET /static/", fileServer)
 
 	mux.HandleFunc("GET /", app.home)
-	mux.HandleFunc("GET /leaderboard", app.leaderboardFull)
+	mux.HandleFunc("GET /leaderboard/{sort}/{offset}", app.leaderboardFull)
 	mux.HandleFunc("GET /leaderboard-component/{sort}/{offset}", app.leaderboardComponent)
 	mux.HandleFunc("GET /player/skin/head/{id}", app.playerHeadSkin)
 	mux.HandleFunc("GET /player/profile/{id}", app.playerProfile)

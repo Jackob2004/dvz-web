@@ -1,8 +1,8 @@
 {{- /*gotype: github.com/Jackob2004/dvz-web/internal/database.WebPlayerProfile*/ -}}
-{{define "page:title"}}<title hx-swap-oob="true" id="page-title">Player profile: {{ .Name }}</title>{{end}}
+{{define "page:title"}}<title id="page-title">Player profile: {{ .Name }}</title>{{end}}
 
 {{define "page:meta"}}
-    <meta hx-swap-oob="true" id="page-meta" name="page" content="player profile">
+    <meta id="page-meta" name="page" content="player profile">
 {{end}}
 
 {{define "page:main"}}
@@ -73,7 +73,8 @@
             </tr>
             </tbody>
         </table>
-        <button class="pager-btn" hx-get="/leaderboard" hx-target="#player-profile-card" hx-swap="outerHTML">
+        <button class="pager-btn" hx-get="{{ .PrevPageUrl }}" hx-target="#player-profile-card"
+                hx-swap="outerHTML show:top showTarget:main">
             <img src="static/img/arrow_left_icon.svg" alt="Back">
         </button>
     </div>
