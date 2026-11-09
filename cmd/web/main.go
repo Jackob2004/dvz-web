@@ -40,6 +40,7 @@ type application struct {
 	db          *database.DB
 	logger      *slog.Logger
 	skinService *SkinsService
+	liveGame    *liveGameService
 	wg          sync.WaitGroup
 }
 
@@ -84,6 +85,7 @@ func run(logger *slog.Logger) error {
 		db:          db,
 		logger:      logger,
 		skinService: skinsService,
+		liveGame:    newLiveGamePanel(),
 	}
 
 	return app.serveHTTP()

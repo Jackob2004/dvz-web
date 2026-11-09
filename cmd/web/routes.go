@@ -17,6 +17,8 @@ func (app *application) routes() http.Handler {
 	mux.HandleFunc("GET /leaderboard-component/{sort}/{offset}", app.leaderboardComponent)
 	mux.HandleFunc("GET /player/skin/head/{uuid}", app.playerHeadSkin)
 	mux.HandleFunc("GET /player/profile/{uuid}", app.playerProfile)
+	mux.HandleFunc("GET /livegame", app.liveGamePanel)
+	mux.HandleFunc("GET /livegame/events", app.liveGamePanelUpdate)
 
 	return app.logRequest(app.recoverPanic(app.securityHeaders(mux)))
 }
@@ -28,6 +30,7 @@ func (app *application) internalRoutes() http.Handler {
 	mux.HandleFunc("GET /api/player/{uuid}", app.player)
 	mux.HandleFunc("GET /api/players/leaderboard", app.playersLeaderboard)
 	mux.HandleFunc("PUT /api/players/update", app.playersUpdate)
+	mux.HandleFunc("PUT /api/livegame/update", app.liveGameUpdate)
 
 	return app.logRequest(app.recoverPanic(mux))
 }

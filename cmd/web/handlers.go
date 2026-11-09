@@ -1,9 +1,11 @@
 package main
 
 import (
+	"bytes"
 	"errors"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/Jackob2004/dvz-web/internal/database"
 	"github.com/Jackob2004/dvz-web/internal/response"
@@ -122,5 +124,51 @@ func (app *application) playerProfile(w http.ResponseWriter, r *http.Request) {
 	err = response.NamedTemplate(w, http.StatusOK, data, "profile_page", "pages/player_profile.gohtml")
 	if err != nil {
 		app.serverError(w, r, err)
+	}
+}
+
+func (app *application) liveGamePanel(w http.ResponseWriter, r *http.Request) {
+	err := response.NamedTemplate(w, http.StatusOK, "n", "live-game:page", "pages/livegame.gohtml")
+	if err != nil {
+		app.serverError(w, r, err)
+	}
+}
+
+func (app *application) liveGamePanelUpdate(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/event-stream")
+	w.Header().Set("Cache-Control", "no-store")
+
+	rc := http.NewResponseController(w)
+	if err := rc.SetWriteDeadline(time.Time{}); err != nil {
+		app.serverError(w, r, err)
+		return
+	}
+
+	ctx := r.Context()
+	channel, subUUID := app.liveGame.subscribe()
+	defer app.liveGame.unsubscribe(subUUID)
+	buf := new(bytes.Buffer)
+
+	for {
+		select {
+		case gameInfo := <-channel:
+			templateName, err := gameInfo.templateName()
+			if err != nil {
+				app.logger.Error("liveGamePanelUpdate: error getting template name:", "err", err)
+				continue
+			}
+
+			err = response.NamedSSETemplate(w, buf, gameInfo.unpack(), templateName, "pages/livegame.gohtml")
+			if err != nil {
+				if errors.Is(err, response.ErrStreamBroken) {
+					app.logger.Debug("liveGamePanelUpdate: error writing to the response: ", "err", err)
+					return
+				}
+				app.logger.Error("liveGamePanelUpdate: error rendering template", "err", err)
+			}
+
+		case <-ctx.Done():
+			return
+		}
 	}
 }

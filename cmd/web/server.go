@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
+	"net"
 	"net/http"
 	"os"
 	"os/signal"
@@ -13,6 +14,7 @@ import (
 )
 
 const (
+	internalIdleTimeout   = time.Minute * 2
 	defaultIdleTimeout    = time.Minute
 	defaultReadTimeout    = 5 * time.Second
 	defaultWriteTimeout   = 10 * time.Second
@@ -20,6 +22,12 @@ const (
 )
 
 func (app *application) serveHTTP() error {
+	appCtx, cancelApp := context.WithCancel(context.Background())
+	defer cancelApp()
+
+	baseCtxFunc := func(net.Listener) context.Context {
+		return appCtx
+	}
 	srv := &http.Server{
 		Addr:         fmt.Sprintf(":%d", app.config.httpPort),
 		Handler:      app.routes(),
@@ -27,15 +35,17 @@ func (app *application) serveHTTP() error {
 		IdleTimeout:  defaultIdleTimeout,
 		ReadTimeout:  defaultReadTimeout,
 		WriteTimeout: defaultWriteTimeout,
+		BaseContext:  baseCtxFunc,
 	}
 
 	internalSrv := &http.Server{
 		Addr:         fmt.Sprintf("127.0.0.1:%d", app.config.internalHttpPort),
 		Handler:      app.internalRoutes(),
 		ErrorLog:     slog.NewLogLogger(app.logger.Handler(), slog.LevelWarn),
-		IdleTimeout:  defaultIdleTimeout,
+		IdleTimeout:  internalIdleTimeout,
 		ReadTimeout:  defaultReadTimeout,
 		WriteTimeout: defaultWriteTimeout,
+		BaseContext:  baseCtxFunc,
 	}
 
 	shutdownErrorChan := make(chan error)
@@ -45,6 +55,7 @@ func (app *application) serveHTTP() error {
 		signal.Notify(quitChan, syscall.SIGINT, syscall.SIGTERM)
 		<-quitChan
 
+		cancelApp()
 		ctx, cancel := context.WithTimeout(context.Background(), defaultShutdownPeriod)
 		srvErr := srv.Shutdown(ctx)
 		defer cancel()

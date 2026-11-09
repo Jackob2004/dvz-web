@@ -43,13 +43,27 @@ var TemplateFuncs = template.FuncMap{
 	"urlSetParam": urlSetParam,
 	"urlDelParam": urlDelParam,
 
-	"leaderboardPos": leaderboardPosition,
-	"mod":            mod,
-	"formatSeconds":  formatSeconds,
+	"leaderboardPos":  leaderboardPosition,
+	"percentOf":       percentOf,
+	"mod":             mod,
+	"formatSeconds":   formatSeconds,
+	"formatLiveTimer": formatLiveTimer,
+}
+
+func percentOf(a int, percent int) int {
+	return (a * percent) / 100
 }
 
 func mod(a, b int) int {
 	return a % b
+}
+
+func formatLiveTimer(time int) string {
+	hours := time / 3600
+	minutes := time % 3600 / 60
+	seconds := time % 60
+
+	return fmt.Sprintf("%02d:%02d:%02d", hours, minutes, seconds)
 }
 
 func formatSeconds(s int64) string {

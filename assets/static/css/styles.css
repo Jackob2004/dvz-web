@@ -465,3 +465,114 @@ tbody tr:hover {
     background-color: #6084af;
     color: black;
 }
+
+#live-game-panel {
+    width: min(90vw, 1300px);
+    height: 100%;
+    padding: 1rem;
+    background: url("/static/img/cracks.svg") center;
+    background-size: cover;
+
+    border-radius: 30px;
+}
+
+#live-game-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.live-section {
+    background-color: var(--pallete-navy);
+    padding: 1rem;
+    text-align: center;
+    box-shadow: var(--shadow-elevation-medium);
+}
+
+.live-phase {
+    padding: 1rem;
+    text-align: center;
+    background-color: var(--pallete-navy);
+
+    border: solid 8px var(--pallete-brown);
+    border-radius: 16px;
+    font-weight: bold;
+    box-shadow: var(--shadow-elevation-high);
+}
+
+.live-timer {
+    border-top: solid 8px var(--pallete-text-white);
+}
+
+.live-players-to-start {
+    border-top: solid 8px gray;
+}
+
+.live-info-text {
+    font-style: italic;
+}
+
+.live-dwarves {
+    border-top: solid 8px #00F600;
+}
+
+.live-dwarves-zombies {
+    border-top: 8px solid;
+    border-image: linear-gradient(to right, #3DEA3D, #E52727) 1;
+}
+
+.live-dwarves-text {
+    color: #3DEA3D;
+    font-style: italic;
+}
+
+.live-zombies-text {
+    color: #E52727;
+    font-style: italic;
+}
+
+.live-shrine-health {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    text-align: center;
+    border-radius: 80px;
+}
+
+#shrine-health-bar {
+    width: 80%;
+}
+
+.live-shrines {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+    align-items: center;
+
+    background-color: var(--pallete-navy);
+    padding: 1rem;
+    border: 10px ridge brown;
+    box-shadow: var(--shadow-elevation-medium);
+    border-radius: 16px;
+}
+
+.live-shrines img {
+    flex: 0 1 64px;
+}
+
+.live-active-shrine {
+    box-shadow: var(--shadow-elevation-high);
+    border-radius: 20px;
+}
+
+.live-small-container {
+    display: flex;
+    justify-content: space-evenly;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.live-small-container div {
+    flex: 0 1 450px;
+}

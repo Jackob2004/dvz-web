@@ -1,0 +1,123 @@
+{{- /*gotype: github.com/Jackob2004/dvz-web/cmd/web.gameInfoView*/ -}}
+{{define "page:title"}}<title id="page-title">Live Game</title>{{end}}
+
+{{define "page:meta"}}
+    <meta id="page-meta" name="page" content="live-game">
+{{end}}
+
+{{define "page:main"}}
+    <div class="inter-regular" id="live-game-panel">
+        <div hx-sse:connect="/livegame/events"
+             hx-swap="innerHTML"
+             hx-target="#live-game-container">
+        </div>
+        <div id="live-game-container">
+            <p>Connecting...</p>
+        </div>
+    </div>
+{{end}}
+
+{{define "live-game:recruiting"}}
+    <div id="live-game-container" class="inter-regular">
+        <div class="live-phase metamorphous-regular">
+            Phase: <span class="live-info-text">{{ .GamePhase }}</span>
+        </div>
+
+        <div class="live-small-container">
+            <div class="live-players-to-start live-section">
+                Players to start the match:
+                <span class="live-info-text" {{if eq .Dwarves .PlayersToStart}} style="color: #3DEA3D" {{end}}>{{ .Dwarves }} / {{ .PlayersToStart }}</span>
+            </div>
+            <div class="live-timer live-section">
+                Time to start: <span class="live-info-text">{{ formatLiveTimer .Time }}</span>
+            </div>
+        </div>
+    </div>
+{{end}}
+
+{{define "live-game:preparation"}}
+    <div id="live-game-container" class="inter-regular">
+        <div class="live-phase metamorphous-regular">Phase: {{ .GamePhase }}</div>
+
+        <div class="live-small-container">
+            <div class="live-timer live-section">
+                Time to next phase: <span class="live-info-text">{{ formatLiveTimer .Time }}</span>
+            </div>
+            <div class="live-dwarves live-section">Dwarves: <span
+                        class="live-info-text">{{ .Dwarves }}</span>
+            </div>
+        </div>
+    </div>
+{{end}}
+
+{{define "live-game:attack"}}
+    <div id="live-game-container" class="inter-regular">
+        <div class="live-phase metamorphous-regular">Phase: {{ .GamePhase }}</div>
+
+        <div class="live-shrines">
+            {{range $idx, $val := .Shrines}}
+                {{if gt $.CurrShrine $idx}}
+                    <img width="64" height="64" src="static/img/shrine_fallen.png" alt="fallen-shrine">
+                {{else}}
+                    <img width="64" height="64" src="static/img/shrine.png" alt="shrine"
+                         {{if eq $idx $.CurrShrine}}class="live-active-shrine"
+                            {{if $.ShrineShielded}} style="border: 5px solid gold"
+                            {{else}} style="border: 5px solid #00EAFF"
+                            {{end}}
+                            {{end}}>
+                {{end}}
+            {{end}}
+        </div>
+
+        <div class="live-shrine-health live-section">
+            <div>
+                {{if .ShrineShielded }}
+                    <span style="color: gold">Shrine shield</span>
+                {{else}}
+                    <span style="color: #00EAFF">Shrine health</span>
+                {{end}}
+            </div>
+            <meter id="shrine-health-bar" min="0" max="{{ .ShrineMaxHealth }}" low="{{ percentOf .ShrineMaxHealth 25}}"
+                   high="{{ percentOf .ShrineMaxHealth 70 }}"
+                   optimum="{{ percentOf .ShrineMaxHealth 80 }}" value="{{ .ShrineHealth }}">
+            </meter>
+        </div>
+
+        <div class="live-small-container">
+            <div class="live-timer live-section">
+                Time elapsed: <span class="live-info-text">{{ formatLiveTimer .Time }}</span>
+            </div>
+            <div class="live-dwarves-zombies live-section">
+                <span style="margin-right: 16px">Dwarves</span>
+                <span class="live-dwarves-text">{{.Dwarves}}</span>
+                <span style="font-weight: bold;font-size: xx-large;margin-left: 8px;margin-right:8px">:</span>
+                <span class="live-zombies-text">{{.Zombies}}</span>
+                <span style="margin-left: 16px">Zombies</span>
+            </div>
+        </div>
+
+    </div>
+{{end}}
+
+{{define "live-game:restart"}}
+    <div id="live-game-container" class="inter-regular">
+        <div class="live-phase metamorphous-regular">Phase: {{ .GamePhase }}</div>
+        <div class="live-timer live-section">
+            Time to server restart: <span class="live-info-text">{{ formatLiveTimer .Time }}</span>
+        </div>
+    </div>
+{{end}}
+
+{{define "live-game:end"}}
+    <div class="inter-regular live-section">Server is restarting...</div>
+{{end}}
+
+{{define "live-game:offline"}}
+    <div class="inter-regular live-section">Server is offline...</div>
+{{end}}
+
+{{define "live-game:page"}}
+    {{template "page:title" .}}
+    {{template "page:meta" .}}
+    {{template "page:main" .}}
+{{end}}

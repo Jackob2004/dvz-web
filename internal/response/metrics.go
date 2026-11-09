@@ -40,3 +40,12 @@ func (mw *MetricsResponseWriter) Write(b []byte) (int, error) {
 func (mw *MetricsResponseWriter) Unwrap() http.ResponseWriter {
 	return mw.wrapped
 }
+
+func (mw *MetricsResponseWriter) Flush() {
+	if flusher, ok := mw.wrapped.(http.Flusher); ok {
+		if !mw.headerWritten {
+			mw.headerWritten = true
+		}
+		flusher.Flush()
+	}
+}

@@ -14,7 +14,7 @@ func (app *application) ping(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *application) player(w http.ResponseWriter, r *http.Request) {
-	playerUUID := r.PathValue("id")
+	playerUUID := r.PathValue("uuid")
 
 	playerStats, err := app.db.GetPlayerStatistics(playerUUID)
 	if err != nil {
@@ -67,4 +67,16 @@ func (app *application) playersLeaderboard(w http.ResponseWriter, r *http.Reques
 	if err := response.JSON(w, http.StatusOK, leaderboard); err != nil {
 		app.serverError(w, r, err)
 	}
+}
+
+func (app *application) liveGameUpdate(w http.ResponseWriter, r *http.Request) {
+	var info gameInfo
+	err := request.DecodeJSON(w, r, &info)
+	if err != nil {
+		app.badRequest(w, r, err)
+		return
+	}
+
+	app.liveGame.updateGameInfo(info)
+	w.WriteHeader(http.StatusNoContent)
 }
