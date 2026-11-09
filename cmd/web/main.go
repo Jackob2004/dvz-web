@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"html/template"
 	"log/slog"
 	"os"
 	"runtime/debug"
@@ -36,12 +37,13 @@ type config struct {
 }
 
 type application struct {
-	config      config
-	db          *database.DB
-	logger      *slog.Logger
-	skinService *SkinsService
-	liveGame    *liveGameService
-	wg          sync.WaitGroup
+	config        config
+	db            *database.DB
+	logger        *slog.Logger
+	skinService   *SkinsService
+	liveGame      *liveGameService
+	wg            sync.WaitGroup
+	templateCache map[string]*template.Template
 }
 
 func run(logger *slog.Logger) error {
@@ -80,12 +82,18 @@ func run(logger *slog.Logger) error {
 		return err
 	}
 
+	templateCache, err := newTemplateCache()
+	if err != nil {
+		return err
+	}
+
 	app := &application{
-		config:      cfg,
-		db:          db,
-		logger:      logger,
-		skinService: skinsService,
-		liveGame:    newLiveGamePanel(),
+		config:        cfg,
+		db:            db,
+		logger:        logger,
+		skinService:   skinsService,
+		liveGame:      newLiveGamePanel(),
+		templateCache: templateCache,
 	}
 
 	return app.serveHTTP()

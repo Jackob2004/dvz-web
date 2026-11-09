@@ -22,10 +22,7 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 		app.serverError(w, r, err)
 	}
 
-	err = response.Page(w, http.StatusOK, data, "pages/home.gohtml")
-	if err != nil {
-		app.serverError(w, r, err)
-	}
+	app.render(w, r, http.StatusOK, "base", "base", data)
 }
 
 func leaderboardHelper(w http.ResponseWriter, r *http.Request, templateName string, app *application) {
@@ -45,10 +42,7 @@ func leaderboardHelper(w http.ResponseWriter, r *http.Request, templateName stri
 		return
 	}
 
-	err = response.NamedTemplate(w, http.StatusOK, data, templateName, "pages/home.gohtml")
-	if err != nil {
-		app.serverError(w, r, err)
-	}
+	app.render(w, r, http.StatusOK, "home", templateName, data)
 }
 
 func (app *application) leaderboardFull(w http.ResponseWriter, r *http.Request) {
@@ -121,17 +115,11 @@ func (app *application) playerProfile(w http.ResponseWriter, r *http.Request) {
 		prevPageUrl,
 	}
 
-	err = response.NamedTemplate(w, http.StatusOK, data, "profile_page", "pages/player_profile.gohtml")
-	if err != nil {
-		app.serverError(w, r, err)
-	}
+	app.render(w, r, http.StatusOK, "player_profile", "profile_page", data)
 }
 
 func (app *application) liveGamePanel(w http.ResponseWriter, r *http.Request) {
-	err := response.NamedTemplate(w, http.StatusOK, "n", "live-game:page", "pages/livegame.gohtml")
-	if err != nil {
-		app.serverError(w, r, err)
-	}
+	app.render(w, r, http.StatusOK, "livegame", "live-game:page", "none")
 }
 
 func (app *application) liveGamePanelUpdate(w http.ResponseWriter, r *http.Request) {
@@ -158,7 +146,7 @@ func (app *application) liveGamePanelUpdate(w http.ResponseWriter, r *http.Reque
 				continue
 			}
 
-			err = response.NamedSSETemplate(w, buf, gameInfo.unpack(), templateName, "pages/livegame.gohtml")
+			err = app.renderSSE(w, buf, gameInfo.unpack(), "livegame", templateName)
 			if err != nil {
 				if errors.Is(err, response.ErrStreamBroken) {
 					app.logger.Debug("liveGamePanelUpdate: error writing to the response: ", "err", err)
