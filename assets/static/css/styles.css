@@ -170,11 +170,6 @@ header {
     }
 }
 
-header a {
-    margin-bottom: 8px;
-    color: var(--pallete-text-white);
-}
-
 header h1 {
     text-align: center;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
@@ -203,12 +198,17 @@ nav ul {
 
 nav li {
     flex: 1 0 150px;
-    padding: 8px 16px;
     background-color: var(--pallete-red);
     color: var(--pallete-text-white);
     text-align: center;
     font-weight: bold;
     font-size: 0.6rem;
+}
+
+header a {
+    display: block;
+    padding: 8px 16px;
+    color: var(--pallete-text-white);
 }
 
 nav li:hover {
