@@ -211,6 +211,10 @@ header a {
     color: var(--pallete-text-white);
 }
 
+h1 a {
+    padding: 0;
+}
+
 nav li:hover {
     background-color: #770c17;
 }
@@ -562,7 +566,7 @@ tbody tr:hover {
     width: min(90vw, 1300px);
     height: 100%;
     padding: 1rem;
-    background: url("/static/img/cracks.svg") center;
+    background: url("/static/img/cracks_light.svg") center;
     background-size: cover;
 
     border-radius: 30px;
@@ -579,6 +583,7 @@ tbody tr:hover {
     padding: 1rem;
     text-align: center;
     box-shadow: var(--shadow-elevation-medium);
+    border-radius: 5px;
 }
 
 .live-phase {
