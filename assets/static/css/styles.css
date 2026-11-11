@@ -37,10 +37,14 @@ body {
     background-position: center;
     background-size: cover;
     background-attachment: fixed;
+    font-family: "Roboto Light", serif;
+}
+
+#app-container {
     display: flex;
     flex-direction: column;
     gap: 48px;
-    font-family: "Roboto Light", serif;
+    height: 100%;
 }
 
 @media (min-width: 768px) {
@@ -449,11 +453,6 @@ p {
     background-color: var(--pallete-dark-green);
 }
 
-footer {
-    display: flex;
-    justify-content: space-between;
-}
-
 button:disabled {
     opacity: 0.4;
     cursor: not-allowed;
@@ -675,6 +674,10 @@ tbody tr:hover {
 }
 
 footer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 16px;
     padding: 16px;
 
     background-image: url("/static/img/cracks.svg");
