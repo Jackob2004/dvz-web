@@ -55,6 +55,11 @@ type WebPlayerProfile struct {
 	Level               int     `db:"level"`
 }
 
+type WebPlayerIdentifier struct {
+	UUID string `db:"uuid"`
+	Name string `db:"username"`
+}
+
 type SortOption string
 
 const (
@@ -199,4 +204,23 @@ func (db *DB) GetWebPlayerProfile(uuid string) (WebPlayerProfile, error) {
 	}
 
 	return profile, nil
+}
+
+func (db *DB) GetWebPlayerIdentifiers(name string) ([]WebPlayerIdentifier, error) {
+	var players []WebPlayerIdentifier
+
+	stmt := `SELECT uuid, username
+	FROM players WHERE username LIKE ?`
+
+	err := db.Select(&players, stmt, name+"%")
+
+	if err != nil {
+		return nil, err
+	}
+
+	if len(players) == 0 {
+		return nil, ErrNoRecord
+	}
+
+	return players, nil
 }

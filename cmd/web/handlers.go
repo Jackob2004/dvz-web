@@ -118,6 +118,22 @@ func (app *application) playerProfile(w http.ResponseWriter, r *http.Request) {
 	app.render(w, r, http.StatusOK, "player_profile", "profile_page", data)
 }
 
+func (app *application) searchPlayer(w http.ResponseWriter, r *http.Request) {
+	playerName := r.FormValue("search")
+	if playerName == "" {
+		app.render(w, r, http.StatusOK, "base", "player-identifier", nil)
+		return
+	}
+
+	players, err := app.db.GetWebPlayerIdentifiers(playerName)
+	if err != nil && !errors.Is(err, database.ErrNoRecord) {
+		app.serverError(w, r, err)
+		return
+	}
+
+	app.render(w, r, http.StatusOK, "base", "player-identifier", players)
+}
+
 func (app *application) liveGamePanel(w http.ResponseWriter, r *http.Request) {
 	app.render(w, r, http.StatusOK, "livegame", "live-game:page", "none")
 }

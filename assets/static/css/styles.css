@@ -1,5 +1,6 @@
 :root {
     --pallete-navy: #1C2C40;
+    --pallete-light-navy: #263d57;
     --pallete-dark-green: #305925;
     --pallete-light-green: #3F7330;
     --pallete-brown: #73532D;
@@ -65,11 +66,84 @@ main {
     color: var(--pallete-text-white);
 }
 
+dialog {
+    width: 700px;
+    margin: auto;
+    padding: 1rem;
+    border: none;
+    border-radius: 20px;
+    background-color: #263d57;
+    box-shadow: var(--shadow-elevation-medium);
+    color: var(--pallete-text-white);
+}
+
+#open-dialog-field {
+    font-size: 0.8rem;
+}
+
+input[type="search"] {
+    outline: none;
+    border: none;
+    border-radius: 20px;
+    padding: 8px 12px;
+}
+
+#dialog-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+#player-search-results {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+
+    padding: 1rem;
+    height: 300px;
+    overflow-y: auto;
+    border: 3px solid var(--pallete-navy);
+    border-radius: 10px;
+}
+
+.player-identifier {
+    padding: 8px 16px;
+    border-radius: 20px;
+    background-color: #3f3f3f;
+}
+
+.player-identifier:hover {
+    opacity: 0.8;
+}
+
+#dialog-close-btn {
+    width: fit-content;
+    align-self: flex-end;
+    background-color: #474711;
+    color: var(--pallete-text-white);
+    border-radius: 20px;
+}
+
+#dialog-close-btn:hover {
+    cursor: pointer;
+    opacity: 0.8;
+}
+
+#search-input-container {
+    display: flex;
+    flex-direction: column;
+}
+
+::backdrop {
+    background-color: var(--pallete-navy);
+    opacity: 0.8;
+}
+
 header {
     display: flex;
     flex-wrap: wrap;
+    gap: 1rem;
     align-items: center;
-    gap: 32px;
     padding: 16px;
 
     background-image: url("/static/img/cracks.svg");
@@ -80,15 +154,31 @@ header {
     border-bottom: 3px solid var(--pallete-brown);
 }
 
+#header-right {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: space-between;
+    align-items: center;
+
+    flex-grow: 1;
+}
+
+@media (max-width: 600px) {
+    #header-right {
+        justify-content: center;
+    }
+}
+
 header a {
     margin-bottom: 8px;
     color: var(--pallete-text-white);
 }
 
 header h1 {
+    text-align: center;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
 }
-
 
 .metamorphous-regular {
     font-family: "Metamorphous", serif;
@@ -103,18 +193,20 @@ header h1 {
     font-style: normal;
 }
 
-
 nav ul {
     display: flex;
     align-items: center;
     gap: 16px;
     list-style-type: none;
+    padding: 0;
 }
 
 nav li {
+    flex: 1 0 150px;
     padding: 8px 16px;
     background-color: var(--pallete-red);
     color: var(--pallete-text-white);
+    text-align: center;
     font-weight: bold;
     font-size: 0.6rem;
 }
@@ -413,7 +505,7 @@ button:disabled {
 }
 
 #level-marker div {
-    text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.85);
+    text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.85);
 }
 
 #level-value {

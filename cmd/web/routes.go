@@ -17,6 +17,7 @@ func (app *application) routes() http.Handler {
 	mux.HandleFunc("GET /leaderboard-component/{sort}/{offset}", app.leaderboardComponent)
 	mux.HandleFunc("GET /player/skin/head/{uuid}", app.playerHeadSkin)
 	mux.HandleFunc("GET /player/profile/{uuid}", app.playerProfile)
+	mux.HandleFunc("POST /search/player", app.searchPlayer)
 	mux.HandleFunc("GET /livegame", app.liveGamePanel)
 	mux.HandleFunc("GET /livegame/events", app.liveGamePanelUpdate)
 

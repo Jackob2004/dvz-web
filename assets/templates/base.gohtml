@@ -19,15 +19,64 @@
 
     </head>
     <body>
+
+    <dialog id="player-search-dialog" class="inter-regular">
+        <div id="dialog-container">
+            <div id="search-input-container">
+                <label for="player-search-field">Find player</label>
+                <input id="player-search-field" name="search" type="search" autofocus autocomplete="off"
+                       hx-post="/search/player"
+                       hx-trigger="input changed delay:200ms, keyup[key=='Enter']"
+                       hx-target="#player-search-results">
+            </div>
+
+            <div id="player-search-results"></div>
+
+            <button id="dialog-close-btn">Close</button>
+        </div>
+    </dialog>
+
     <header>
-        <h1 class="metamorphous-regular"><a hx-get="/leaderboard/level/0" hx-target="main" hx-swap="innerHTML">Dwarves
-                vs Zombies</a></h1>
-        {{template "partial:nav" .}}
+        <div id="header-left">
+            <h1 class="metamorphous-regular"><a hx-get="/leaderboard/level/0" hx-target="main" hx-swap="innerHTML">Dwarves
+                    vs Zombies</a></h1>
+        </div>
+
+        <div id="header-right">
+            {{template "partial:nav" .}}
+            <div>
+                <label>
+                    <input id="open-dialog-field" type="search" readonly value="Search Player">
+                </label>
+            </div>
+        </div>
     </header>
     <main>
         {{template "page:main" .}}
     </main>
     {{template "partial:footer" .}}
+
+    <script>
+        const modalDialog = document.querySelector("dialog")
+
+        document.querySelector("#open-dialog-field").addEventListener("click", () => modalDialog.showModal())
+        document.querySelector("#dialog-close-btn").addEventListener("click", () => modalDialog.close())
+
+        modalDialog.addEventListener("click", (e) => {
+            if (e.target.classList.contains("player-identifier")) {
+                modalDialog.close()
+            }
+        })
+
+    </script>
     </body>
     </html>
+{{end}}
+
+{{define "player-identifier"}}
+    {{range .}}
+        <div class="player-identifier" hx-get="/player/profile/{{ .UUID }}" hx-target="main" hx-swap="innerHTML">
+            {{ .Name }}
+        </div>
+    {{end}}
 {{end}}
