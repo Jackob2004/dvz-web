@@ -9,6 +9,7 @@ import (
 
 	"github.com/Jackob2004/dvz-web/internal/database"
 	"github.com/Jackob2004/dvz-web/internal/response"
+	"github.com/Jackob2004/dvz-web/internal/version"
 )
 
 func (app *application) home(w http.ResponseWriter, r *http.Request) {
@@ -22,7 +23,15 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 		app.serverError(w, r, err)
 	}
 
-	app.render(w, r, http.StatusOK, "base", "base", data)
+	wrappedData := struct {
+		leaderboardData
+		Version string
+	}{
+		data,
+		version.Get(),
+	}
+
+	app.render(w, r, http.StatusOK, "base", "base", wrappedData)
 }
 
 func leaderboardHelper(w http.ResponseWriter, r *http.Request, templateName string, app *application) {

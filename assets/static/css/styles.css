@@ -673,3 +673,15 @@ tbody tr:hover {
 .live-small-container div {
     flex: 0 1 450px;
 }
+
+footer {
+    padding: 16px;
+
+    background-image: url("/static/img/cracks.svg");
+    background-size: cover;
+    background-position: center;
+    border-color: var(--pallete-brown);
+    border-top: 3px solid var(--pallete-brown);
+    color: var(--pallete-text-white);
+    font-size: 0.7rem;
+}
